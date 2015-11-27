@@ -1,4 +1,5 @@
 #!/isan/bin/python
+# -*- coding: utf-8 -*-
 # Distributed under terms of the MIT license.
 # Copyright © 2015 dolobanko <dolobanko@gmail.com>
 
