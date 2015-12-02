@@ -145,7 +145,7 @@ def cdpneigh():
 					if not arg['virtualmachines']:
 						print ('{0:15} \t\t {1:10}  {2:25}  {3:10}  {4:15}'.format (value['platform_id'].ljust(15), value['port_id'].ljust(29) , str(ip).ljust(34), 'CDP'.ljust(27), value['intf_id']))
 					else:
-						bulshit(value['device_id'], vminfo, value['platform_id'], value['port_id'])
+						getvm(value['device_id'], vminfo, value['platform_id'], value['port_id'])
 						vminfo =''
 	
 
@@ -195,11 +195,11 @@ def lldpneigh():
 			if not arg['virtualmachines']:
 				print ('{0:15} \t\t {1:10}  {2:25}  {3:10}  {4:15}'.format (hyperv.ljust(15), portid.ljust(29) , ipaddr.ljust(34), 'LLDP'.ljust(27), interf))
 			else:
-				bulshit(list5[i], vminfo, hyperv, portid)
+				getvm(list5[i], vminfo, hyperv, portid)
 				vminfo =''
 		i=i+1
 	
-def bulshit(vmhost, vminfo, hypervisor, local_port):
+def getvm(vmhost, vminfo, hypervisor, local_port):
 	
 	cmdip = 'ping '+ vmhost + ' count 1 '
 	cmdiprun = cli.cli(cmdip)
@@ -212,7 +212,7 @@ def bulshit(vmhost, vminfo, hypervisor, local_port):
 		vm_names = cmdfunc(get_vm_name).split('\n\n')
 		counter = 0
 		while counter < (len(uuid)-1):
-			print ('{0:15} \t\t {1:28}  {2:25}  {3:10}'.format (vm_names[counter].ljust(10), uuid[counter].ljust(25) , hypervisor.ljust(45), local_port.ljust(27)))
+			print ('{0:15} \t\t {1:28}  {2:25}  {3:10}'.format (vm_names[counter].ljust(1), uuid[counter].ljust(62) , hypervisor.ljust(35), local_port))
 			counter = counter + 1
 	elif vminfo == 'esx':
 		get_uuid_cmd = "esxcli vm process list | egrep 'UUID' | awk -F ': ' '{print $2}'"
@@ -220,9 +220,8 @@ def bulshit(vmhost, vminfo, hypervisor, local_port):
 		get_vm_name = "esxcli vm process list | egrep 'Display Name' | awk -F ': ' '{print $2}'"
 		vm_names = cmdfunc(get_vm_name).split('\n')
 		counter = 0
-		#print uuid
 		while counter < (len(vm_names)-1):
-			print ('{0:15} \t\t {1:28}  {2:25}  {3:10}'.format (vm_names[counter].ljust(10), uuid[counter].ljust(25) , hypervisor.ljust(45), local_port.ljust(27)))
+			print ('{0:15} \t\t {1:28}  {2:25}  {3:10}'.format (vm_names[counter].ljust(1), uuid[counter].ljust(62) , hypervisor.ljust(35), local_port))
 			counter = counter + 1
 		#print vm_names
 		#print "Ebawulovo"
@@ -233,57 +232,13 @@ def bulshit(vmhost, vminfo, hypervisor, local_port):
 
 
 
-"""
-	print 
-	host = '192.168.2.3'
-	user = 'root'
-	password = '4u2kn0w'
-	command = 'xe vm-list'
-	exit = 'logout'
-	COMMAND_PROMPT = '[#$] '
-	SSH_NEWKEY = '(?i)are you sure you want to continue connecting'
-	#cmd = 'ssh %s@%s' % (user, host)
-	
-	#run =cli.clid(cmd)
-	child = pexpect.spawn(cli.clip(cmd))
-	child.expect ('(?i)password')
-	child.sendline(password)
-	child.logfile = sys.stdout
-	
-
-	#cmd = 
-	try:
-		try: 
-			child = pexpect.spawn(cli.clip(cmd))
-			if verbose:
-				child.logfile = sys.stdout
-			child.timeout = 4
-			#child.expect([SSH_NEWKEY, COMMAND_PROMPT, '(?i)password'])
-			child.expect ('(?i)password')
-		except pexpect.TIMEOUT:
-			raise OurException("Couldn't log on to the hypervisor")
-
-		child.sendline(password)
-		child.expect('#')
-		child.sendline(command)
-		child.expect('#')
-		print child.read()
-		child.sendline('logout');
-	except (pexpect.EOF, pexpect.TIMEOUT), e:
-		print 'shit'
-    	#raise error("Error when trying to get VM's list")
-    """
-
-
-
-
 
 
 if __name__ == "__main__" :
 
 	u"""Main function"""
 
-	"""
+	
 	if arg['info']: 
 		deviceinfo()
 
@@ -310,14 +265,14 @@ if __name__ == "__main__" :
 			print (color.BLUE + port + color.ENDCOLOR)
 		print ('\n')
 
-	"""
+	
 	if arg['virtualmachines']:
 		print "\nBefore continue, please copy next public key to your hypervisors. Or you will need to enter password:\n"
 		get_pub_key = 'run bash cat /var/home/admin/.ssh/id_rsa.pub'
 		cli.clip(get_pub_key)
 		print ('\n')
-		print ('VM Name' +'\t\t\t\t\t' + 'VM UUID' + '\t\t\t\t\t' + 'Hypervisor' + '\t\t\t' + 'Local Port')
-		print ('-------------------------------------------------------------------------------------------------------------------------------')
+		print ('VM Name' +'\t\t\t\t\t' + 'VM UUID' + '\t\t\t\t\t\t\t' + 'Hypervisor' + '\t\t\t' + 'Local Port')
+		print ('-------------------------------------------------------------------------------------------------------------------------------------------------')
 		cdpneigh()
 		lldpneigh()
 
