@@ -17,7 +17,6 @@ import json
 import cisco
 import argparse
 import cli
-import pexpect
 import sys
 
 global pars
@@ -199,7 +198,10 @@ def lldpneigh():
 				vminfo =''
 		i=i+1
 	
+
 def getvm(vmhost, vminfo, hypervisor, local_port):
+
+	u"""Getting VMs from hypervisors"""
 	
 	cmdip = 'ping '+ vmhost + ' count 1 '
 	cmdiprun = cli.cli(cmdip)
@@ -232,8 +234,6 @@ def getvm(vmhost, vminfo, hypervisor, local_port):
 
 
 
-
-
 if __name__ == "__main__" :
 
 	u"""Main function"""
@@ -251,9 +251,13 @@ if __name__ == "__main__" :
 			print ('Hypervisor' +'\t\t\t' + 'Connected Port' + '\t\t\t' + 'IP address' + '\t\t\t' + 'Neighbor Type' + '\t\t\t' + 'Local Port')
 			print ('--------------------------------------------------------------------------------------------------------------------------------------------------')
 		if arg['virtualmachines']:
-			print "\nBefore continue, please copy next public key to your hypervisors. Or you will need to enter password:\n"
-			get_pub_key = 'run bash cat /var/home/admin/.ssh/id_rsa.pub'
-			cli.clip(get_pub_key)
+			key_y = raw_input("\nBefore continue, please, copy public key to your hypervisors. Or you will need to enter password.Show pubkey?(y/n)")
+			if key_y.startswith('y'):
+				print ('\n')
+				get_pub_key = 'run bash cat /var/home/admin/.ssh/id_rsa.pub'
+				cli.clip(get_pub_key)
+			else:
+				print ('\n')
 			print ('\n')
 			print ('VM Name' +'\t\t\t\t\t\t' + 'VM UUID' + '\t\t\t\t\t\t' + 'Hypervisor' + '\t\t\t' + 'Local Port')
 			print ('-------------------------------------------------------------------------------------------------------------------------------------------------')
@@ -282,17 +286,4 @@ if __name__ == "__main__" :
 		for port in connports():
 			print (color.BLUE + port + color.ENDCOLOR)
 		print ('\n')
-
-	"""
-	if arg['virtualmachines']:
-		print "\nBefore continue, please copy next public key to your hypervisors. Or you will need to enter password:\n"
-		get_pub_key = 'run bash cat /var/home/admin/.ssh/id_rsa.pub'
-		cli.clip(get_pub_key)
-		print ('\n')
-		print ('VM Name' +'\t\t\t\t\t\t' + 'VM UUID' + '\t\t\t\t\t\t' + 'Hypervisor' + '\t\t\t' + 'Local Port')
-		print ('-------------------------------------------------------------------------------------------------------------------------------------------------')
-		cdpneigh()
-		lldpneigh()
-	"""
-
 
