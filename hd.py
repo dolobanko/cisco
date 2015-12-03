@@ -18,6 +18,7 @@ import cisco
 import argparse
 import cli
 import sys
+import os
 
 global pars
 
@@ -227,12 +228,17 @@ def getvm(vmhost, vminfo, hypervisor, local_port):
 			print ('{0:15} \t\t {1:28}  {2:25}  {3:10}'.format (vm_names[counter].ljust(1), uuid[counter].ljust(62) , hypervisor.ljust(30), local_port))
 			counter = counter + 1
 
-
+"""
 def getciscouser():
 	cmd = 'show user-account | sed -n 1p'
 	user = cli.cli(cmd).split(':')[1]
-	print user 
-
+	ssh_dir = '/var/home/' + user + '/.ssh/id_rsa.pub'
+	if not os.path.exists(ssh_dir):
+		print 'shit'
+		print ssh_dir
+	else:
+		print 'all is ok '
+"""
 
 if __name__ == "__main__" :
 
@@ -287,5 +293,5 @@ if __name__ == "__main__" :
 		for port in connports():
 			print (color.BLUE + port + color.ENDCOLOR)
 		print ('\n')
-
-	getciscouser()
+	
+	#getciscouser()
