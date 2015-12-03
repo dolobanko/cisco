@@ -81,11 +81,11 @@ def protocol_check():
 			if re.search(r'enabled', value):
 				print (key.upper() + ' protocol is' + color.GREEN +' enabled' + color.ENDCOLOR)
 				if key == 'cdp':
-					counter = counter + 1
+					counter = counter + 2
 				elif key == 'lldp':
 					counter = counter - 1
 			else:
-				counter = 0
+				#counter = 0
 				print (key.upper() + ' protocol is' + color.RED + ' disabled' + color.ENDCOLOR)
 		except AttributeError:
 			print ('Check device. Need to be Nexus 7000/9000.')
@@ -208,12 +208,13 @@ def getvm(vmhost, vminfo, hypervisor, local_port):
 	ipa = re.findall(r'(?:[\d]{1,3})\.(?:[\d]{1,3})\.(?:[\d]{1,3})\.(?:[\d]{1,3})', cmdiprun)[0]
 	cmdfunc = lambda x: cli.cli('run bash ssh root@' + ipa + ' ' + x )
 	if vminfo == 'xen':
-		get_uuid_cmd = 'xe vm-list  power-state=running params=uuid | egrep -o "[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}"'
+		#get_uuid_cmd = 'xe vm-list  power-state=running params=uuid | egrep -o "[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}"'
+		get_uuid_cmd = 'xe vm-list params=uuid | egrep -o "[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}"'
 		uuid = cmdfunc(get_uuid_cmd).split('\n')
 		get_vm_name = "xe vm-list params=name-label | awk '{print $5}' "
-		vm_names = cmdfunc(get_vm_name).split('\n\n')
+		vm_names = cmdfunc(get_vm_name).split('\n\n\n')
 		counter = 0
-		while counter < (len(uuid)-1):
+		while counter < (len(uuid)-2):
 			print ('{0:15} \t\t {1:28}  {2:25}  {3:10}'.format (vm_names[counter].ljust(1), uuid[counter].ljust(62) , hypervisor.ljust(30), local_port))
 			counter = counter + 1
 	elif vminfo == 'esx':
@@ -225,13 +226,12 @@ def getvm(vmhost, vminfo, hypervisor, local_port):
 		while counter < (len(vm_names)-1):
 			print ('{0:15} \t\t {1:28}  {2:25}  {3:10}'.format (vm_names[counter].ljust(1), uuid[counter].ljust(62) , hypervisor.ljust(30), local_port))
 			counter = counter + 1
-		#print vm_names
-		#print "Ebawulovo"
-		#command = 'esxcli vms vm list'
-		#cmd = 'run bash ssh root@' + ipa + ' ' + command
-		#cli.clip(cmd)  ## распарсить строку
-	
 
+
+def getciscouser():
+	cmd = 'show user-account | sed -n 1p'
+	user = cli.cli(cmd).split(':')[1]
+	print user 
 
 
 if __name__ == "__main__" :
@@ -246,6 +246,7 @@ if __name__ == "__main__" :
 		if arg['all']:
 			deviceinfo()
 		protocheck = protocol_check()
+		#print protocheck
 		if not arg['virtualmachines']:
 			print ('\n')
 			print ('Hypervisor' +'\t\t\t' + 'Connected Port' + '\t\t\t' + 'IP address' + '\t\t\t' + 'Neighbor Type' + '\t\t\t' + 'Local Port')
@@ -261,7 +262,7 @@ if __name__ == "__main__" :
 			print ('\n')
 			print ('VM Name' +'\t\t\t\t\t\t' + 'VM UUID' + '\t\t\t\t\t\t' + 'Hypervisor' + '\t\t\t' + 'Local Port')
 			print ('-------------------------------------------------------------------------------------------------------------------------------------------------')
-		if (protocheck == 3) or (arg['cdp']):
+		if (protocheck == 4) or (arg['cdp']):
 			if arg['virtualmachines']:
 				cdpneigh()
 			else:
@@ -271,15 +272,15 @@ if __name__ == "__main__" :
 				lldpneigh()
 			else:
 				lldpneigh()
-		elif (protocheck == 2):
+		elif (protocheck == 3):
 			if arg['virtualmachines']:
 				cdpneigh()
 				lldpneigh()
 			else:
 				cdpneigh()
 				lldpneigh()
-		elif protocheck == 0:
-			print ('\nNo CDP/LLDP protocol running on this switch!')
+		elif protocheck == 2:
+			print (color.RED + '\nNo CDP/LLDP protocol running on this switch!\n' + color.ENDCOLOR)
 	
 	if arg['port']:
 		print ('\nPorts on "UP" state on this switch:\n')
@@ -287,3 +288,4 @@ if __name__ == "__main__" :
 			print (color.BLUE + port + color.ENDCOLOR)
 		print ('\n')
 
+	getciscouser()
